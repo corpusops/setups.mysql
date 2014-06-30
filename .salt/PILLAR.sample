@@ -1,0 +1,35 @@
+#
+# This file contains default values which are used
+# by the salt states deploying your project.
+# you may copy them to your relevant PILLAR file
+# before editing them.
+# If you need to add variables, this is where to begin.
+# Please keep defaults in there, but real passwords
+# must be putted inside pillar
+#
+# replace project_name in your pillar by
+# the current projectname
+# you can also merge parts of this file
+# with the relevant pillar
+makina-projects.projectname:
+  data:
+    mail: sysadmin@foo.com
+    domain: "{fqdn}"
+# uncomment in pillar and add any setting
+# you can start to tune with pgtune (apt-get install pgtune)
+#    mysql_optims:
+# 1.5GB
+#      available_mem: 1500
+#      root_passwd: secret
+    password: "secret"
+    sysctls:
+# shmmax: valueInBytes*1024
+# shmall: valueInBytes*1024/4096
+      - kernel.shmall: null
+      - kernel.shmmax: null
+    databases:
+      - db1:
+          password: "{password}"
+          user: db1
+
+# vim:set ft=yaml:
