@@ -16,7 +16,6 @@ makina-projects.projectname:
     mail: sysadmin@foo.com
     domain: "{fqdn}"
 # uncomment in pillar and add any setting
-# you can start to tune with pgtune (apt-get install pgtune)
 #    mysql_optims:
 # 1.5GB
 #      available_mem: 1500
