@@ -1,4 +1,3 @@
-#
 # This file contains default values which are used
 # by the salt states deploying your project.
 # you may copy them to your relevant PILLAR file
@@ -11,15 +10,17 @@
 # the current projectname
 # you can also merge parts of this file
 # with the relevant pillar
+
+# makina-states mysql configuration (copy in your pillar, 
+#                                    uncomment and edit)
+# makina-states.services.db.mysql.available_mem: 1500
+# makina-states.services.db.mysql.root_passwd: secret
+
+# corpus mysql project configuration
 makina-projects.projectname:
   data:
     mail: sysadmin@foo.com
     domain: "{fqdn}"
-# uncomment in pillar and add any setting
-#    mysql_optims:
-# 1.5GB
-#      available_mem: 1500
-#      root_passwd: secret
     password: "secret"
     sysctls:
 # shmmax: valueInBytes*1024

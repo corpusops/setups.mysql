@@ -26,11 +26,9 @@ reload-sysctls-{{cfg.name}}:
     - watch:
       - mc_proxy: mysql-post-conf-hook
 {% endif %}
-{% import "makina-states/services/db/mysql/init.sls" as macros with context %}
-{{macros.gen_settings(cfg.name, **data.get('mysql_settings', {}))}}
 
-{# dont split out db creation as it would erase the tuned
-   my/local.cnf #}
+
+{% import "makina-states/services/db/mysql/init.sls" as macros with context %}
 {% for dbext in data.databases %}
 {% for db, dbdata in dbext.items() %}
 {{ macros.mysql_db(db, user=dbdata.user, password=dbdata.password) }}
