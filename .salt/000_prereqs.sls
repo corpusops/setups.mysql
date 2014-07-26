@@ -27,7 +27,6 @@ reload-sysctls-{{cfg.name}}:
       - mc_proxy: mysql-post-conf-hook
 {% endif %}
 
-
 {% import "makina-states/services/db/mysql/init.sls" as macros with context %}
 {% for dbext in data.databases %}
 {% for db, dbdata in dbext.items() %}
