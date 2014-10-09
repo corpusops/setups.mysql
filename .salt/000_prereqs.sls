@@ -33,3 +33,11 @@ reload-sysctls-{{cfg.name}}:
 {{ macros.mysql_db(db, user=dbdata.user, password=dbdata.password) }}
 {%endfor %}
 {%endfor%}
+
+{% for userdict in data.get('users', {}) %}
+{% for user, data  in userdict.items() %}
+{% set data = data.copy() %}
+{% set pw = data.pop('password', '') %}
+{{macros.mysql_user(user, pw, **data) }}
+{% endfor %}
+{% endfor %}

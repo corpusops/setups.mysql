@@ -27,6 +27,8 @@ makina-projects.projectname:
 # shmall: valueInBytes*1024/4096
       - kernel.shmall: null
       - kernel.shmmax: null
+    #users:
+    #  - test: {password: test}
     databases:
       - db1:
           password: "{password}"
