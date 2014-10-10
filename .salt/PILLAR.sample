@@ -14,8 +14,6 @@
 # makina-states mysql configuration (copy in your pillar, 
 #                                    uncomment and edit)
 # makina-states.services.db.mysql.available_mem: 1500
-# makina-states.services.db.mysql.root_passwd: secret
-
 # corpus mysql project configuration
 makina-projects.projectname:
   data:
