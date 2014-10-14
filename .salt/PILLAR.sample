@@ -18,6 +18,7 @@
 makina-projects.projectname:
   data:
     mail: sysadmin@foo.com
+    cron_periodicity: "*/30 * * * *"
     domain: "{fqdn}"
     password: "secret"
     sysctls:
@@ -31,5 +32,43 @@ makina-projects.projectname:
       - db1:
           password: "{password}"
           user: db1
+    pma_ver: 4.2.10
+    www_dir: '{project_root}/www'
+    nginx_vhost: "salt://makina-projects/{name}/files/nginx.conf"
+    nginx_top: "salt://makina-projects/{name}/files/nginx.top.conf"
+    fpm_sock: "{project_root}/var/run/fpm.sock"
+    fpm_pool:
+      open_basedir:
+        - "{data_root}/var/sites"
+        - "{data_root}/var/log"
+        - "{data_root}/var/tmp"
+        - "{data_root}/var/private"
+        - "{project_root}/phpMyAdmin-{pma_ver}-all-languages"
+        - "{project_root}/www"
+        - "{project_root}/lib"
+        - "{project_root}/var/tmp"
+        - "{project_root}/var/private"
+      include_path:
+        - "{project_root}/www"
+        - "{project_root}/lib"
+      socket_name: "{fpm_sock}"
+      session_auto_start: 0
+      allow_url_fopen: 1
+      upload_max_filesize: "25000M"
+      max_input_vars: 3000
+      fpm_user: "{user}"
+      fpm_group: "www-data"
+      memory_limit: "256M"
+      modules:
+        apc:
+          user_entries_hint: 1000,
+          num_files_hint: 2000,
+          ttl: 0,
+          user_ttl: 300,
+          gc_ttl: 0,
+          shm_size: "64M"
+    htaccess: "/etc/{name}.webaccess"
+    http_users:
+      - root: secret
 
 # vim:set ft=yaml:
