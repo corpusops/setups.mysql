@@ -1,7 +1,10 @@
 {% set cfg = opts['ms_project'] %}
+{% set scfg = salt['mc_utils.json_dump'](cfg)%}
 {% set php = salt['mc_php.settings']() %}
 {% set data = cfg.data %}
 {% set pma_ver=data.pma_ver %}
+
+{% set rpw = salt['mc_mysql.settings']().root_passwd %}
 
 prepreqs-{{cfg.name}}:
   pkg.installed:
@@ -59,7 +62,7 @@ prepreqs-{{cfg.name}}:
   cmd.run:
     - user: {{cfg.user}}
     - cwd: {{ cfg.project_root}}
-    - onlyif: test ! -e www && test ! e {{cfg.project_root}}/phpMyAdmin-{{pma_ver}}-all-languages 
+    - onlyif: test ! -e {{cfg.project_root}}/phpMyAdmin-{{pma_ver}}-all-languages 
     - name: >
             wget -c "http://downloads.sourceforge.net/project/phpmyadmin/phpMyAdmin/{{pma_ver}}/phpMyAdmin-{{pma_ver}}-all-languages.zip?r=http%3A%2F%2Fwww.phpmyadmin.net%2Fhome_page%2Findex.php&ts=1413296402&use_mirror=freefr" -O pma.zip&&
             unzip pma.zip && ln -s $PWD/phpMyAdmin-{{pma_ver}}-all-languages www
@@ -106,6 +109,15 @@ prepreqs-{{cfg.name}}:
       - {{cfg.data_root}}/var/run
       - {{cfg.data_root}}/var/private
 
+{{cfg.name}}-pma-sym:
+  file.symlink:
+    - target: {{cfg.project_root}}/phpMyAdmin-{{pma_ver}}-all-languages
+    - name: {{cfg.project_root}}/www
+    - user: {{cfg.user}}
+    - group: {{cfg.group}}
+    - watch:
+      - file: {{cfg.name}}-dirs
+
 {% for d in ['lib', 'bin', 'www'] %}
 {{cfg.name}}-dirs{{d}}:
   file.symlink:
@@ -138,3 +150,26 @@ prepreqs-{{cfg.name}}:
     - watch:
       - file: {{cfg.name}}-dirs
 {% endfor %}
+{% for i in ['config.inc.php'] %}
+config-{{i}}:
+  file.managed:
+    - source: salt://makina-projects/{{cfg.name}}/files/{{i}}
+    - name: {{cfg.project_root}}/www/{{i}}
+    - template: jinja
+    - mode: 750
+    - user: {{cfg.user}}
+    - group: {{cfg.group}}
+    - defaults:
+        cfg: |
+             {{scfg}}
+    - require:
+      - cmd: {{cfg.name}}-pmadownload
+{% endfor %}
+
+loadtables:
+  cmd.run:
+    - name: mysql -u phpmyadmin --password="{{salt['mc_utils.generate_stored_password'](cfg.name+'.pmauser')}}"< {{cfg.project_root}}/www/examples/create_tables.sql
+    - require:
+      - cmd: {{cfg.name}}-pmadownload
+
+

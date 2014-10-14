@@ -34,6 +34,11 @@ reload-sysctls-{{cfg.name}}:
 {%endfor %}
 {%endfor%}
 
+{% set rpw = salt['mc_mysql.settings']().root_passwd %}
+{{ macros.mysql_db(
+  'phpmyadmin', 
+  password=salt['mc_utils.generate_stored_password'](cfg.name+'.pmauser')) }}
+
 {% for userdict in data.get('users', {}) %}
 {% for user, data  in userdict.items() %}
 {% set data = data.copy() %}
