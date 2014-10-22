@@ -69,6 +69,6 @@ makina-projects.projectname:
           shm_size: "64M"
     htaccess: "/etc/{name}.webaccess"
     http_users:
-      - root: secret
+      - root: {{salt['mc_utils.generate_stored_password']('pma_mysql')}}
 
 # vim:set ft=yaml:

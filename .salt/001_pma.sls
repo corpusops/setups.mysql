@@ -75,9 +75,33 @@ prepreqs-{{cfg.name}}:
     - group: www-data
     - mode: 770
 
+{% set httpusers = {} %}
+
+{% for dbext in data.databases %}
+{%  for db, dbdata in dbext.items() %}
+{%    do httpusers.update({dbdata.user: dbdata.password}) %}
+{%  endfor %}
+{% endfor %}
+
+{% for userdict in data.get('users', {}) %}
+{%  for user, data  in userdict.items() %}
+{%    set data = data.copy() %}
+{%    set pw = data.pop('password', '') %}
+{%    do httpusers.update({user: pw}) %}
+{%  endfor %}
+{% endfor %}
+
+{% do httpusers.update({'phpmyadmin': salt['mc_utils.generate_stored_password'](cfg.name+'.pmauser')}) %}
+
 {% if data.get('http_users', {}) %}
 {% for userrow in data.http_users %}
-{% for user, passwd in userrow.items() %}
+{%  for user, pw in userrow.items() %}
+{%    do httpusers.update({user: pw}) %}
+{%  endfor %}
+{% endfor %}
+{% endif %}  
+
+{% for user, passwd in httpusers.items() %}
 {{cfg.name}}-{{user}}-htaccess:
   webutil.user_exists:
     - name: {{user}}
@@ -88,8 +112,7 @@ prepreqs-{{cfg.name}}:
     - watch:
       - file: {{cfg.name}}-htaccess
 {% endfor %}
-{% endfor %}
-{% endif %}  
+
 
 {{cfg.name}}-dirs:
   file.directory:
