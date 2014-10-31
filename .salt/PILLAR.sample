@@ -61,11 +61,11 @@ makina-projects.projectname:
       memory_limit: "256M"
       modules:
         apc:
-          user_entries_hint: 1000,
-          num_files_hint: 2000,
-          ttl: 0,
-          user_ttl: 300,
-          gc_ttl: 0,
+          user_entries_hint: 1000
+          num_files_hint: 2000
+          ttl: 0
+          user_ttl: 300
+          gc_ttl: 0
           shm_size: "64M"
     htaccess: "/etc/{name}.webaccess"
     http_users:
