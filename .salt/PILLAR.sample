@@ -67,6 +67,11 @@ makina-projects.projectname:
           user_ttl: 300
           gc_ttl: 0
           shm_size: "64M"
+{#
+    local_ssl: |
+               {{salt['mc_utils.json_dump'](
+                  salt['mc_ssl.selfsigned_ssl_certs']('mysql.abc.mairie-albi.fr', as_text=True))}}
+#}
     htaccess: "/etc/{name}.webaccess"
     http_users:
       - root: {{salt['mc_utils.generate_stored_password']('pma_mysql')}}
