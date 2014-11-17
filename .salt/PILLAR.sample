@@ -32,7 +32,7 @@ makina-projects.projectname:
       - db1:
           password: "{password}"
           user: db1
-    pma_ver: 4.2.10
+    pma_ver: 4.2.11
     www_dir: '{project_root}/www'
     nginx_vhost: "salt://makina-projects/{name}/files/nginx.conf"
     nginx_top: "salt://makina-projects/{name}/files/nginx.top.conf"
@@ -70,7 +70,7 @@ makina-projects.projectname:
 {#
     local_ssl: |
                {{salt['mc_utils.json_dump'](
-                  salt['mc_ssl.selfsigned_ssl_certs']('mysql.abc.mairie-albi.fr', as_text=True))}}
+                  salt['mc_ssl.selfsigned_ssl_certs']('mysql.example.fr', as_text=True))}}
 #}
     htaccess: "/etc/{name}.webaccess"
     http_users:
