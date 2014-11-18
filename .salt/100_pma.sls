@@ -65,7 +65,7 @@ prepreqs-{{cfg.name}}:
     - onlyif: test ! -e {{cfg.project_root}}/phpMyAdmin-{{pma_ver}}-all-languages 
     - name: >
             wget -c "http://downloads.sourceforge.net/project/phpmyadmin/phpMyAdmin/{{pma_ver}}/phpMyAdmin-{{pma_ver}}-all-languages.zip?r=http%3A%2F%2Fwww.phpmyadmin.net%2Fhome_page%2Findex.php&ts=1413296402&use_mirror=freefr" -O "pma{{pma_ver}}.zip" &&
-            unzip pma{{pma_ver}}.zip && ln -s $PWD/phpMyAdmin-{{pma_ver}}-all-languages www
+            unzip -o -qq pma{{pma_ver}}.zip && ln -s $PWD/phpMyAdmin-{{pma_ver}}-all-languages www
 
 {{cfg.name}}-htaccess:
   file.managed:
