@@ -62,7 +62,7 @@ prepreqs-{{cfg.name}}:
   cmd.run:
     - user: {{cfg.user}}
     - cwd: {{ cfg.project_root}}
-    - onlyif: test ! -e {{cfg.project_root}}/phpMyAdmin-{{pma_ver}}-all-languages 
+    - onlyif: test ! -e {{cfg.project_root}}/phpMyAdmin-{{pma_ver}}-all-languages
     - name: >
             wget -c "http://downloads.sourceforge.net/project/phpmyadmin/phpMyAdmin/{{pma_ver}}/phpMyAdmin-{{pma_ver}}-all-languages.zip?r=http%3A%2F%2Fwww.phpmyadmin.net%2Fhome_page%2Findex.php&ts=1413296402&use_mirror=freefr" -O "pma{{pma_ver}}.zip" &&
             unzip -o -qq pma{{pma_ver}}.zip && ln -s $PWD/phpMyAdmin-{{pma_ver}}-all-languages www
@@ -99,7 +99,7 @@ prepreqs-{{cfg.name}}:
 {%    do httpusers.update({user: pw}) %}
 {%  endfor %}
 {% endfor %}
-{% endif %}  
+{% endif %}
 
 {% for user, passwd in httpusers.items() %}
 {{cfg.name}}-{{user}}-htaccess:
@@ -125,7 +125,6 @@ prepreqs-{{cfg.name}}:
     - names:
       - {{cfg.project_root}}/lib
       - {{cfg.project_root}}/bin
-      - {{cfg.project_root}}/www
       - {{cfg.data_root}}/var
       - {{cfg.data_root}}/var/log
       - {{cfg.data_root}}/var/tmp
@@ -134,8 +133,8 @@ prepreqs-{{cfg.name}}:
 
 {{cfg.name}}-pma-sym:
   file.symlink:
-    - target: {{cfg.project_root}}/phpMyAdmin-{{pma_ver}}-all-languages
     - name: {{cfg.project_root}}/www
+    - target: {{cfg.project_root}}/phpMyAdmin-{{pma_ver}}-all-languages
     - user: {{cfg.user}}
     - group: {{cfg.group}}
     - watch:
