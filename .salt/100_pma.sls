@@ -63,9 +63,10 @@ prepreqs-{{cfg.name}}:
     - user: root
     - cwd: {{ cfg.project_root}}
     - onlyif: test ! -e e{{cfg.project_root}}/phpMyAdmin-{{pma_ver}}-all-languages
+#            wget -c "http://downloads.sourceforge.net/project/phpmyadmin/phpMyAdmin/{{pma_ver}}/phpMyAdmin-{{pma_ver}}-all-languages.zip?r=http%3A%2F%2Fwww.phpmyadmin.net%2Fhome_page%2Findex.php&ts=1413296402&use_mirror=freefr" -O "pma{{pma_ver}}.zip"
     - name: |
             set -ex
-            wget -c "http://downloads.sourceforge.net/project/phpmyadmin/phpMyAdmin/{{pma_ver}}/phpMyAdmin-{{pma_ver}}-all-languages.zip?r=http%3A%2F%2Fwww.phpmyadmin.net%2Fhome_page%2Findex.php&ts=1413296402&use_mirror=freefr" -O "pma{{pma_ver}}.zip"
+            wget -c "https://files.phpmyadmin.net/phpMyAdmin/{{pma_ver}}/phpMyAdmin-{{pma_ver}}-all-languages.zip?r=http%3A%2F%2Fwww.phpmyadmin.net%2Fhome_page%2Findex.php&ts=1413296402&use_mirror=freefr" -O "pma{{pma_ver}}.zip"
             unzip -o -qq pma{{pma_ver}}.zip
             chown -Rf {{cfg.user}}:{{cfg.group}} $PWD/phpMyAdmin-{{pma_ver}}-all-languages
             rm -f www
@@ -194,7 +195,7 @@ config-{{i}}:
 
 loadtables:
   cmd.run:
-    - name: mysql -u phpmyadmin --password="{{salt['mc_utils.generate_stored_password'](cfg.name+'.pmauser')}}"< {{cfg.project_root}}/www/examples/create_tables.sql
+    - name: mysql -u phpmyadmin --password="{{salt['mc_utils.generate_stored_password'](cfg.name+'.pmauser')}}"< {{cfg.project_root}}/www/sql/create_tables.sql
     - require:
       - cmd: {{cfg.name}}-pmadownload
 

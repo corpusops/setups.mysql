@@ -32,7 +32,7 @@ makina-projects.projectname:
       - db1:
           password: "{password}"
           user: db1
-    pma_ver: 4.4.9
+    pma_ver: 4.4.14.1
     www_dir: '{project_root}/www'
     nginx_vhost: "salt://makina-projects/{name}/files/nginx.conf"
     nginx_top: "salt://makina-projects/{name}/files/nginx.top.conf"
