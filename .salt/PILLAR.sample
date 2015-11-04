@@ -11,12 +11,17 @@
 # you can also merge parts of this file
 # with the relevant pillar
 
-# makina-states mysql configuration (copy in your pillar, 
+# makina-states mysql configuration (copy in your pillar,
 #                                    uncomment and edit)
 # makina-states.services.db.mysql.available_mem: 1500
 # corpus mysql project configuration
 makina-projects.projectname:
   data:
+    keep_days: '17'
+    keep_lasts: '21'
+    keep_monthes: '1'
+    keep_weeks: '2'
+    keep_logs: '7'
     mail: sysadmin@foo.com
     cron_periodicity: "*/30 * * * *"
     domain: "{fqdn}"
