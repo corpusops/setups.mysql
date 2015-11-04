@@ -17,10 +17,10 @@
 # corpus mysql project configuration
 makina-projects.projectname:
   data:
-    keep_days: '17'
-    keep_lasts: '21'
-    keep_monthes: '1'
-    keep_weeks: '2'
+    keep_days: '2'
+    keep_lasts: '2'
+    keep_monthes: '0'
+    keep_weeks: '0'
     keep_logs: '7'
     mail: sysadmin@foo.com
     cron_periodicity: "*/30 * * * *"
