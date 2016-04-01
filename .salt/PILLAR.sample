@@ -39,12 +39,16 @@ makina-projects.projectname:
           user: db1
     pma_ver: 4.4.14.1
     www_dir: '{project_root}/www'
-    nginx_vhost: "salt://makina-projects/{name}/files/nginx.conf"
-    nginx_top: "salt://makina-projects/{name}/files/nginx.top.conf"
     nginx:
+      domain: '{domain}'
+      doc_root: '{www_dir}'
       port: 80
+      vh_top_source: "salt://makina-projects/{name}/files/nginx.top.conf"
+      vh_content_source: "salt://makina-projects/{name}/files/nginx.conf"
     fpm_sock: "{project_root}/var/run/fpm.sock"
     fpm_pool:
+      domain: '{domain}'
+      doc_root: '{www_dir}'
       open_basedir:
         - "{data_root}/var/sites"
         - "{data_root}/var/log"

@@ -14,23 +14,14 @@ echo reboot:
       - mc_proxy: nginx-pre-hardrestart-hook
       - mc_proxy: makina-php-pre-restart
 
+{% set nginx_params = data.get('nginx', {}) %}
 {% set ssl_key = None %}
 {% set ssl_cert = None %}
 {% set lssl = cfg.data.get("local_ssl", []) %}
 {% if lssl %}
 {% set lssl = salt['mc_utils.json_load'](lssl)[0] %}
-{% set ssl_cert = lssl[0] %}
-{% set ssl_key = lssl[1] %}
+{% do nginx_params.setdefault('ssl_cert',  lssl[0]) %}
+{% do nginx_params.setdefault('ssl_key',  lssl[1]) %}
 {% endif %}
-{{nginx.virtualhost(data.domain,
-                    data.www_dir,
-                    ssl_cert=ssl_cert,
-                    ssl_key=ssl_key,
-                    vh_top_source=data.nginx_top,
-                    vh_content_source=data.nginx_vhost,
-                    port=data.nginx.port,
-                    cfg=cfg) }}
-{{php.fpm_pool(cfg.data.domain,
-               cfg.data.www_dir,
-               cfg=cfg,
-               **cfg.data.fpm_pool)}}
+{{nginx.virtualhost(cfg=cfg, **nginx_params) }}
+{{php.fpm_pool(cfg=cfg, **cfg.data.fpm_pool)}}
