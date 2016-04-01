@@ -28,6 +28,7 @@ echo reboot:
                     ssl_key=ssl_key,
                     vh_top_source=data.nginx_top,
                     vh_content_source=data.nginx_vhost,
+                    port=data.nginx.port,
                     cfg=cfg) }}
 {{php.fpm_pool(cfg.data.domain,
                cfg.data.www_dir,

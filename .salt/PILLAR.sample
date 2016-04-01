@@ -41,6 +41,8 @@ makina-projects.projectname:
     www_dir: '{project_root}/www'
     nginx_vhost: "salt://makina-projects/{name}/files/nginx.conf"
     nginx_top: "salt://makina-projects/{name}/files/nginx.top.conf"
+    nginx:
+      port: 80
     fpm_sock: "{project_root}/var/run/fpm.sock"
     fpm_pool:
       open_basedir:
