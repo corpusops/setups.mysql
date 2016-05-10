@@ -1,9 +1,13 @@
 {% set cfg = opts['ms_project'] %}
 {% import "makina-states/services/http/nginx/init.sls" as nginx with context %}
 {% import "makina-states/services/php/init.sls" as php with context %}
+{% set data = cfg.data %}
+{% if not data.get('pma_enabled', True) %}
+noop:
+  mc_proxy.hook: []
+{% else %}
 include:
   - makina-states.services.php.phpfpm_with_nginx
-{% set data = cfg.data %}
 # the fcgi sock is meaned to be at docroot/../var/fcgi/fpm.sock;
 
 # incondentionnaly reboot nginx & fpm upon deployments
@@ -25,3 +29,4 @@ echo reboot:
 {% endif %}
 {{nginx.virtualhost(cfg=cfg, **nginx_params) }}
 {{php.fpm_pool(cfg=cfg, **cfg.data.fpm_pool)}}
+{% endif %}

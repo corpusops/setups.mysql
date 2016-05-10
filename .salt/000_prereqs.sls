@@ -35,9 +35,11 @@ reload-sysctls-{{cfg.name}}:
 {%endfor%}
 
 {% set rpw = salt['mc_mysql.settings']().root_passwd %}
+{% if not data.get('pma_enabled', True) %}
 {{ macros.mysql_db(
   'phpmyadmin', 
   password=salt['mc_utils.generate_stored_password'](cfg.name+'.pmauser')) }}
+{% endif %}
 
 {% for userdict in data.get('users', {}) %}
 {% for user, data  in userdict.items() %}

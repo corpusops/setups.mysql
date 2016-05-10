@@ -5,7 +5,10 @@
 {% set pma_ver=data.pma_ver %}
 
 {% set rpw = salt['mc_mysql.settings']().root_passwd %}
-
+{% if not data.get('pma_enabled', True) %}
+noop:
+  mc_proxy.hook: []
+{% else %}
 prepreqs-{{cfg.name}}:
   pkg.installed:
     - pkgs:
@@ -198,4 +201,4 @@ loadtables:
     - require:
       - cmd: {{cfg.name}}-pmadownload
 
-
+{% endif %}
