@@ -17,7 +17,7 @@
 # corpus mysql project configuration
 makina-projects.projectname:
   data:
-    pma_enabled: true
+    pma_enabled: false
     keep_days: '2'
     keep_lasts: '2'
     keep_monthes: '0'
