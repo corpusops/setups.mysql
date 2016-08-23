@@ -6,7 +6,7 @@ Exemple of a generic mysql db deployment with salt/makina-states
 
 USE/Install With makina-states
 -------------------------------
-- Iniatilise on the target platform the project if it is not already done::
+- Initialize on the target platform the project if it is not already done::
 
     salt mc_project.init_project name=<foo>
 
@@ -14,7 +14,7 @@ USE/Install With makina-states
 
 - Clone the project pillar remote inside your project top directory
 
-- Add/Relace your salt deployment code inside **.salt** inside your repository.
+- Add/Replace your salt deployment code inside **.salt** inside your repository.
 
 - Add the project remote
 
