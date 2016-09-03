@@ -42,12 +42,14 @@ makina-projects.projectname:
     www_dir: '{project_root}/www'
     nginx:
       domain: '{domain}'
+      vhost_basename: 'corpus-mysql'
       doc_root: '{www_dir}'
       port: 80
       vh_top_source: "salt://makina-projects/{name}/files/nginx.top.conf"
       vh_content_source: "salt://makina-projects/{name}/files/nginx.conf"
     fpm_sock: "{project_root}/var/run/fpm.sock"
     fpm_pool:
+      pool_name: 'corpus-mysql'
       domain: '{domain}'
       doc_root: '{www_dir}'
       open_basedir:
