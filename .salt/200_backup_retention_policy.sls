@@ -19,7 +19,7 @@ include:
 {% endfor %}
 
 /etc/db_smart_backup_deactivated:
-{% if cfg.default_env in ['dev'] %}
+{% if cfg.default_env in ['dev'] or data.get('backup_disabled', False)%}
   file.managed:
     - mode: 644
     - user: root
