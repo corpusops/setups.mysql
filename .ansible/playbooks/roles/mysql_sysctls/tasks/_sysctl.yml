@@ -1,0 +1,8 @@
+---
+- sysctl:
+    name: "{{s.key}}"
+    value: "{{s.value}}"
+    state: present
+    sysctl_set: true
+  loop_control: {loop_var: s}
+  with_dict: "{{item}}"

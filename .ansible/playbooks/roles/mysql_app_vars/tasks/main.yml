@@ -1,0 +1,18 @@
+---
+- become: true
+  block:
+    - shell:  mysql --version
+      failed_when: false
+      changed_when: false
+      register: cops_setup_databases_test1
+      no_log: true
+    - shell: mysql
+    - set_fact: {cops_test_no_db: false, cacheable: false}
+  rescue:
+    - set_fact: {cops_test_no_db: true,  cacheable: false}
+- set_fact:
+    cacheable: false
+    cops_mysql_lifecycle_app: |-
+     ((not vars.get('SKIP_INSTALL_MYSQL', False) and
+       (cops_mysql_lifecycle_app|default(false))) or
+      vars.get('FORCE_INSTALL_MYSQL', False))

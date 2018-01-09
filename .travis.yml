@@ -1,0 +1,44 @@
+---
+sudo: required
+dist: trusty
+env:
+  global:
+    - |
+      __NAME__="mysql" \
+      RELEASE_DEBUG="" \
+      COPS_URL="https://github.com/corpusops/corpusops.bootstrap" \
+      COPS_ROOT="$HOME/corpusops/corpusops.bootstrap" \
+      funcs="$COPS_ROOT/bin/cops_shell_common" \
+      silent="$funcs output_in_error silent_vv" \
+      apply_role="sudo -E $silent $COPS_ROOT/bin/cops_apply_role -vvvvv" \
+      release="$COPS_ROOT/hacking/docker_release" \
+      silent_rm="$silent rm -rf"
+  matrix:
+    - |
+      __VERSION__="5.7" \
+      IMAGE="packer__${__VERSION__}.json"  \
+      DOCKER_IMAGE="corpusops/${__NAME__}:${__VERSION__}"
+language: python
+python: "2.7"
+before_install:
+  - sudo apt-get update -qq
+  - sudo service docker stop
+  - .ansible/scripts/download_corpusops.sh
+  - $silent .ansible/scripts/setup_corpusops.sh
+install:
+  - sh -c "$apply_role $COPS_ROOT/roles/corpusops.roles/localsettings_packer/role.yml"
+  - sh -c "$apply_role $COPS_ROOT/roles/corpusops.roles/services_virt_docker/role.yml"
+script:
+  - $silent .ansible/scripts/build_docker_images.sh --images $IMAGE
+after_success:
+  - docker images
+  - |
+    if [ "x$RELEASE_DEBUG" = "x" ];then
+      DEBUG=1 $funcs vv $release $DOCKER_IMAGE
+    else
+      $silent $release $DOCKER_IMAGE
+    fi
+cache:
+  directories:
+    - $HOME/.cache/pip
+    - $HOME/corpusops

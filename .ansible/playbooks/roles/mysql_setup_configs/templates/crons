@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+# {% set d = cops_mysql_vars %}
+# {% for cron in d.crons %}
+{{cron}}
+# {% endfor %}
+# vim:set ft=crontab :

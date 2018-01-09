@@ -1,0 +1,7 @@
+---
+- include_role: {name: corpusops.roles/services_virt_mysql}
+  vars:
+    mysql_prerequisites: false
+    mysql_configuration: false
+    mysql_services: false
+    mysql_checkroot: true

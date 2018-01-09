@@ -1,0 +1,9 @@
+{
+  "images": [
+    {
+      "builder_type": "packer",
+      "version": "5.7",
+      "name": "mysql"
+    }
+  ]
+}

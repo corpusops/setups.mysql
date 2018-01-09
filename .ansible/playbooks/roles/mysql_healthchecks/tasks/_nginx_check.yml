@@ -1,0 +1,9 @@
+---
+- uri:
+    url: "http://{{cops_mysql_vars.query_host}}:{{cops_mysql_vars.nginx.port}}/"
+    return_content: true
+    headers:
+      Host: "{{cops_mysql_vars.domain}}"
+  register: cops_mysql_check1
+  # TODO: @kiorky check we only have an HTTP response (any status)
+  failed_when: "not 'html' in cops_mysql_check1.content"

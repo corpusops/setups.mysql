@@ -1,0 +1,8 @@
+---
+# copy this file instead of symlinking
+cops_mysql_name: mysql
+cops_mysql_db_name: db
+cops_mysql_db_user: user
+cops_mysql_db_password: secret
+corpusops_services_db_mysql_root_password: null
+# corpusops_services_db_mysql_foobar: x

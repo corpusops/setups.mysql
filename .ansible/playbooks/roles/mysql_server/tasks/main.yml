@@ -1,0 +1,8 @@
+---
+# Setup/Install mysql
+- include_role: {name: corpusops.roles/services_virt_mysql}
+  vars:
+    mysql_prerequisites: true
+    mysql_configuration: false
+    mysql_services: false
+    mysql_checkroot: false

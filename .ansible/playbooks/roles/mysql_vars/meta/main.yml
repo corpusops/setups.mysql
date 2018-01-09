@@ -1,0 +1,6 @@
+---
+allow_duplicates: false
+dependencies:
+- role: corpusops.roles/vars
+- role: mysql_steps
+- role: corpusops.roles/services_db_mysql_vars

@@ -1,0 +1,12 @@
+---
+cops_db_name: db
+cops_mysql__roles:
+- name: "{{cops_mysql_db_user}}"
+  password: "{{cops_mysql_db_password}}"
+cops_mysql__databases:
+- db: "{{cops_mysql_db_name}}"
+  owner: "{{cops_mysql_db_user}}"
+cops_mysql_name: "{{cops_app_name}}"
+mysql_servers: mysql_servers
+cops_installer_mode: lazy
+# vim:set ft=sls:

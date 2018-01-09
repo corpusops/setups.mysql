@@ -1,0 +1,20 @@
+---
+- block:
+  - register: cops_mysql_check2
+    no_log: "{{not (cops_vars_debug|default(false))}}"
+    uri:
+      url: "http://{{cops_mysql_vars.host}}:{{cops_mysql_vars.port}}"
+      headers: {Host: "{{cops_mysql_vars.domain}}"}
+      return_content: true
+    failed_when: "'{{cops_mysql_vars.ht_string}}' not in '{0}'.format(cops_mysql_check2.get('server', '')).lower()"
+  rescue:
+  - shell: "service {{cops_mysql_vars.service}} restart && sleep {{cops_mysql_vars.ht_restarttime}}"
+    when: "not _c_cops_mysql_ht_restarted|default(false)"
+  - set_fact: {cacheable: false, _c_cops_mysql_ht_restarted: true}
+  - register: cops_mysql_check2
+    no_log: "{{not (cops_vars_debug|default(false))}}"
+    uri:
+      url: "http://{{cops_mysql_vars.host}}:{{cops_mysql_vars.port}}"
+      headers: {Host: "{{cops_mysql_vars.domain}}"}
+      return_content: true
+    failed_when: "'{{cops_mysql_vars.ht_string}}' not in '{0}'.format(cops_mysql_check2.get('server', '')).lower()"

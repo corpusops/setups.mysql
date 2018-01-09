@@ -1,0 +1,227 @@
+---
+corpusops_core_projects_path: /srv/projects
+cops_mysql__privs: []
+cops_mysql__databases: []
+cops_mysql__roles: []
+cops_mysql_conf: []
+# users than have full right to edit file in the container
+# When this is enabled, the project user/group is also granted full perms
+# (attention, uids!)
+cops_mysql__supereditors_paths:
+  - "{project_root}"
+  - "{data_root}"
+# space separated string of uids to allow to write inside
+# projetct directories (used in development through posix ACLS setter)
+cops_mysql__supereditors: >-
+  {{ ansible_env.get(
+      'SUPEREDITORS', cops_supereditors|default('')
+     ) | copsf_splitstrip | to_json }}
+cops_mysql_supereditors_paths: "{_supereditors_paths}"
+cops_mysql_supereditors: "{_supereditors}"
+# cops_mysql_deb_packages is initialised on behalf of cops_registry voodoo
+# and let users override the list easily
+# cops_mysql_packages: "{{cops_mysql_deb_packages___default+['vim']}}"
+cops_mysql_deb_gis_packages: []
+cops_mysql_deb_runtime_packages:
+  - "jq"
+cops_mysql_deb_packages___default: "{{
+  (cops_mysql_deb_runtime_packages + cops_mysql_deb_gis_packages)
+  | to_json
+  }}"
+# extra conf to add to pgconf (directly added to a tuning conf file (string))
+cops_mysql_sysctls: []
+#- kernel.shmmax: 1106127360
+## 1024 * shmmax / 4096
+#- kernel.shmall: 276531840
+cops_mysql_domain: "{{ansible_fqdn}}"
+# for internal monitoring
+cops_mysql_query_host: "127.0.0.1"
+# for internal service access
+cops_mysql_restart_check_retries: 60
+cops_mysql_name: 'mysql'
+cops_mysql_user: "{name}-user"
+cops_mysql_group: "{name}-group"
+cops_mysql_projects_dir: '{{corpusops_vars.projects_path}}'
+cops_mysql_project_dir: '{projects_dir}/{name}'
+cops_mysql_project_root: "{project_dir}/project"
+cops_mysql_data_root: "{project_dir}/data"
+cops_mysql_cfg: "{data_root}/config"
+cops_mysql_fixperms: "{project_dir}/fixperms.sh"
+cops_mysql_fixperms_cron: "/etc/cron.d/{name}-fixperms"
+cops_mysql_fixperms_cron_periodicity: "0 */2 * * *"
+cops_mysql_secret_variables: []
+cops_mysql_cops_format_resolve_topdb: false
+cops_mysql_cops_do_format_resolve: true
+cops_mysql_cops_sub_namespaces:
+  s: {}
+  lifecycle: {}
+  force: {}
+  dbsmartbackup: {}
+cops_mysql_env_overrides: {}
+cops_mysql_env: {}
+cops_mysql_mysql_bind_host: '127.0.0.1'
+# templates
+## entry point
+cops_mysql_provision_dir: /provision_dir
+cops_mysql_ep_ansible_args: >-
+ -e "cops_cwd={provision_dir}"
+ -e "cops_playbooks=${COPS_ROOT}/playbooks/corpusops"
+ -e "cops_path=${COPS_ROOT}"
+cops_mysql_ep_vaults:
+  - "{provision_dir}/.ansible/vaults/default.yml"
+  - "{provision_dir}/.ansible/vaults/app.yml"
+  - "{provision_dir}/.ansible/vaults/docker.yml"
+  - /setup/reconfigure.yml
+cops_mysql_ep_template: "../templates/app_entry_point"
+# Docker entrypoint settings, tags for cli and vars for playbook reuse via
+# conditionals
+cops_mysql_ep_folder: ".ansible/playbooks"
+cops_mysql_ep_playbook: "app.yml"
+cops_mysql_ep_skip_tags: "{{(
+  'cops_mysql_lifecycle_app_push_code,'
+  'cops_mysql_s_users,'
+  'cops_mysql_s_first_fixperms,'
+  'cops_mysql_s_prerequisites,'
+  'cops_mysql_s_setup_sysctls,'
+  'cops_mysql_s_setup_server,'
+  'cops_mysql_s_workers,'
+  'cops_mysql_s_entry_point,'
+  'cops_mysql_s_manage_content,'
+  'cops_mysql_s_end_fixperms,'
+  )}}"
+cops_mysql_ep_post_start_skip_tags: "{{(
+  'cops_mysql_s_users,'
+  'cops_mysql_s_layout,'
+  'cops_mysql_s_first_fixperms,'
+  'cops_mysql_s_prerequisites,'
+  'cops_mysql_s_setup,'
+  'cops_mysql_s_workers,'
+  'cops_mysql_s_entry_point,'
+  )}}"
+# global orchestration steps (db, code sync, web & workers prereqs, mysql config)
+cops_mysql_become: true
+cops_mysql_ep_main_ep: "/entry_point"
+# service
+cops_mysql_service: "mysql"
+cops_mysql_services: ["{service}"]
+# cops_mysql_rhandlers: [restart_cops_mysql]
+cops_mysql_rhandlers: [restart_cops_mysql_systemd, restart_cops_mysql]
+# Reconfigure upon image reboots
+cops_mysql_reconfigure_services: |-
+  {% set ret = [] %}
+  {% if ansible_virtualization_type in ['docker'] %}
+  {% set _ = ret.append("post-start-{service}") %}
+  {% endif %}
+  {{ ret | to_json }}
+cops_mysql_activated: true
+# Layout, files & configs
+cops_mysql_stickymode: "2"
+cops_mysql_files___default:
+  - {path: "{projects_dir}",
+     owner: root, group: root, state: directory}
+  - {path: "{project_dir}",
+     owner: root, group: root, state: directory}
+  - {path: "{project_root}",
+     owner: "{user}", group: "{group}",
+     state: directory, mode: "{stickymode}750"}
+  - {path: "{data_root}",
+     owner: "{user}", group: "{group}",
+     state: directory, mode: "{stickymode}751"}
+cops_mysql_files: "{{vars['cops_mysql_files___default']}}"
+# Config files
+cops_mysql_configs___default:
+  - {src: "../templates/crons",
+     dest: "/etc/cron.d/mysql-{name}",
+     mode: "0644",
+     owner: "root",
+     group: "root"}
+cops_mysql_fixperms_configs___default:
+  - {src: "../templates/fixperms.sh",
+     dest: "{fixperms}", mode: "0755",
+     owner: root, group: root}
+cops_mysql_fixperms_configs: "{{vars['cops_mysql_fixperms_configs___default']}}"
+cops_mysql_ep_configs___default:
+  # script to reconfigure image before and after systemd is launched
+  - {src: "../templates/reconfigure.sh",
+     dest: "{reconfigure}",
+     mode: "0755",
+     owner: "root",
+     group: "root"}
+  - {src: "../templates/post-start-reconfigure.service",
+     dest: "/etc/systemd/system/post-start-{service}.service",
+     mode: "0644",
+     owner: "root",
+     group: "root"}
+  - {src: "{ep_template}",
+     dest: "/app_entry_point", mode: "0755",
+     owner: root, group: root}
+cops_mysql_ep_configs: "{{vars['cops_mysql_ep_configs___default']}}"
+# SystemD based reconfigure unit settings
+cops_mysql_reconfigure_service_stderr: ""
+cops_mysql_reconfigure_service_stdout: ""
+cops_mysql_reconfigure_unit_after: "network.target {service}.service"
+cops_mysql_reconfigure_install_wantedby: "multi-user.target"
+cops_mysql_reconfigure: "{project_dir}/reconfigure.sh"
+cops_mysql_reconfigure_passenv: "ANSIBLE_PLAY ANSIBLE_FOLDER COPS_ROOT"
+cops_mysql_reconfigure_verbosity: "-v"
+# Code synchronnisation settings (FORCE_COPS_PROVISION_PUSH_CODE to force)
+cops_mysql_push_codes_cwd: "{cops_cwd}"
+cops_mysql_push_codes_sync_mode: "{{ (
+  cops_installer_mode in ['vagrant'] or
+  ansible_virtualization_type in ['docker']
+  ) and 'rsync' or 'git' }}"
+cops_mysql_push_codes_file_tests:
+  git: []
+  rsync: []
+cops_mysql_push_codes_rsync_opts:
+  git:   ["-azv",                           "--exclude", "local/*", "--exclude", ".vagrant", "--exclude", "*.retry"]
+  rsync: ["-azv", "--include", ".git/**/*", "--exclude", "local/*", "--exclude", ".vagrant", "--exclude", "*.retry"]
+cops_mysql_push_codes_rsync_submodule_opts:
+  git:   ["-azv", "--exclude", "*.retry"]
+  rsync: ["-azv", "--exclude", "*.retry"]
+cops_mysql_push_codes:
+- path: "{project_root}"
+  origin_path: "{push_codes_cwd}"
+  sync_mode: "{{cops_mysql_push_codes_sync_mode}}"
+  rsync_opts: "{{cops_mysql_push_codes_rsync_opts[cops_mysql_push_codes_sync_mode]}}"
+  file_tests: "{{cops_mysql_push_codes_file_tests[cops_mysql_push_codes_sync_mode]}}"
+  owner: "{user}"
+  group: "{group}"
+  sub_paths:
+  - path: local/setups.mysql
+    rsync_opts: "{{cops_mysql_push_codes_rsync_submodule_opts[cops_mysql_push_codes_sync_mode]}}"
+    is_submodule: true
+# SSH deploy settings -> env vault
+cops_deploy_ssh_key_paths:
+  deploy:
+    path: "{{'local/.ssh/deploy_key'|copsf_abspath}}"
+    pub: "{{cops_deploy_ssh_pub_key|default('')}}"
+    #  ssh-rsa xxx x@y
+    # should be in encypted vault
+    private: "{{cops_deploy_ssh_key|default('')}}"
+    # -----BEGIN RSA PRIVATE KEY-----
+    # -----END RSA PRIVATE KEY-----
+cops_mysql_cron_hour: 1
+cops_mysql_cron_minute: 5
+cops_mysql_cron_periodicity_pack: "{{ cops_mysql_cron_minute + 0  }} {cron_hour} * * 6"
+cops_mysql_crons___default:
+  - "# MAILTO=foobar"
+cops_mysql_crons: "{{vars['cops_mysql_crons___default']}}"
+# does the front and the instances autoconfigure themselves
+# settings for db backup
+cops_mysql_dbsmartbackup: {}
+# backup settings for database
+# cops_mysql_dbsmartbackup_conf: "/etc/dbsmartbackup/{name}.conf"
+# cops_mysql_dbsmartbackup_cron_mailto: ""
+# cops_mysql_dbsmartbackup_backup_path_prefix: "/srv/backups"
+# cops_mysql_dbsmartbackup_global_backup: ""
+# cops_mysql_dbsmartbackup_servername: "{{ansible_fqdn}}"
+# cops_mysql_dbsmartbackup_keep_lasts: 3
+# cops_mysql_dbsmartbackup_keep_days: 3
+# cops_mysql_dbsmartbackup_keep_weeks: 0
+# cops_mysql_dbsmartbackup_keep_monthes: 0
+# cops_mysql_dbsmartbackup_keep_logs: 7
+# cops_mysql_dbsmartbackup_dbnames: all
+# cops_mysql_dbsmartbackup_dbexclude: ''
+# cops_mysql_dbsmartbackup_cron: "0 3 * * * root /srv/apps/dbsmartbackup/run_dbsmartbackup.sh {dbsmartbackup_conf} --quiet --no-colors"
+# vim:set ft=sls:
