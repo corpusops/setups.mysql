@@ -1,0 +1,13 @@
+---
+# APP
+- hosts: "{{mysql_servers|default('all')}}"
+  roles: [corpusops.roles/ansible_plugins]
+  tasks:
+  - when: ["cops_mysql_lifecycle_app|default(true)"]
+    tags: ["cops_mysql_lifecycle_app"]
+    include_role: {name: mysql_app_vars,  allow_duplicates: false}
+  - when: ["cops_mysql_lifecycle_app"]
+    tags: ["cops_mysql_lifecycle_app"]
+    block:
+    - include_role: {name: mysql_push_code, allow_duplicates: false}
+    - include_role: {name: mysql,           allow_duplicates: false}

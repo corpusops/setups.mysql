@@ -1,0 +1,9 @@
+---
+- shell: >
+    ( export LC_ALL=C LANG=C;echo 'select "veryconnected"' 
+    | mysql --user=root 2>&1 )
+  register: cops_mysql_check1
+  changed_when: false
+  failed_when: >
+    not ((cops_mysql_check1.stdout+cops_mysql_check1.stderr)
+    |regex_search("veryconnected|Access denied"))

@@ -1,0 +1,10 @@
+---
+- when: ["(corpusops_vars.has_services_manager and cops_mysql_vars.activated)"]
+  block:
+  # Check reverse proxy is listening
+  - retries: 10
+    delay: 1
+    include_tasks: _db_check.yml
+    until: >
+      ((cops_mysql_check1.stdout+cops_mysql_check1.stderr)
+      |regex_search("veryconnected|Access denied"))

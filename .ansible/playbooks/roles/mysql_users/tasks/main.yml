@@ -1,0 +1,14 @@
+---
+- group:
+    name: "{{cops_mysql_vars.group}}"
+    state: present
+  tags: [cops_mysql_s_users_group]
+  when: [cops_mysql_s_users_group]
+- user:
+    group: "{{cops_mysql_vars.group}}"
+    name: "{{cops_mysql_vars.user}}"
+    state: present
+    append: true
+    generate_ssh_key: true
+  tags: [cops_mysql_s_users_user]
+  when: [cops_mysql_s_users_user]

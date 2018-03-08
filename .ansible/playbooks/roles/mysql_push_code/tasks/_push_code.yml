@@ -1,0 +1,4 @@
+---
+- include_role: {name: corpusops.roles/utils/push_code}
+  vars:
+    _cops_provision_push_code: "{{item}}"

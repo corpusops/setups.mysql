@@ -1,0 +1,4 @@
+---
+mysql_servers: all
+cops_mysql_reconfigure_service_stderr: "journal+console"
+cops_mysql_reconfigure_service_stdout: "journal+console"

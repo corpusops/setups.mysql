@@ -1,0 +1,55 @@
+---
+- when: [cops_mysql_s_prerequisites_pkgs]
+  tags: [cops_mysql_s_prerequisites_pkgs]
+  block:
+  # workaround the libjpegturbo transitional
+  # package hell by installing it explicitly
+  - name: update & install prerequisites
+    package:
+      cache_valid_time: '{{60*60}}'
+      update_cache: yes
+      name: '{{item}}'
+      state: present
+    when: "(ansible_os_family.lower() in ['debian'] and
+            cops_mysql_vars.deb_packages is not none and
+            cops_mysql_vars.deb_packages|length > 0)"
+    with_items: "{{cops_mysql_vars.deb_packages}}"
+  - name: update & install prerequisites
+    package:
+      update_cache: yes
+      enablerepo: epel,epel-testing
+      name: '{{item}}'
+      state: present
+    when: "(ansible_os_family.lower() in ['redhat'] and
+            cops_mysql_vars.rh_packages is not none and
+            cops_mysql_vars.rh_packages|length > 0)"
+    with_items: "{{cops_mysql_vars.rh_packages}}"
+- when: [cops_mysql_s_prerequisites_build_pkgs]
+  tags: [cops_mysql_s_prerequisites_build_pkgs]
+  block:
+  - name: update & install build prerequisites
+    package:
+      cache_valid_time: '{{60*60}}'
+      update_cache: yes
+      name: '{{item}}'
+      state: present
+    when: "(ansible_os_family.lower() in ['debian'] and
+            cops_mysql_vars.deb_build_packages is not none and
+            cops_mysql_vars.deb_build_packages|length > 0)"
+    with_items: "{{cops_mysql_vars.deb_build_packages}}"
+  - name: update & install build prerequisites
+    package:
+      update_cache: yes
+      enablerepo: epel,epel-testing
+      name: '{{item}}'
+      state: present
+    when: "(ansible_os_family.lower() in ['redhat'] and
+            cops_mysql_vars.rh_build_packages is not none and
+            cops_mysql_vars.rh_build_packages|length > 0)"
+    with_items: "{{cops_mysql_vars.rh_build_packages}}"
+- include_role: {name: corpusops.roles/services_db_mysql}
+  vars:
+    mysql_prerequisites: true
+    mysql_configuration: false
+    mysql_services: false
+    mysql_checkroot: false

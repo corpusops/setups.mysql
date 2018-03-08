@@ -1,0 +1,29 @@
+---
+- when: ["cops_mysql_s_workers_service"]
+  tags: ["cops_mysql_s_workers_service"]
+  block:
+  - include_role: {name: corpusops.roles/services_db_mysql}
+    vars:
+      mysql_prerequisites: false
+      mysql_configuration: false
+      mysql_services: true
+      mysql_checkroot: false 
+  # activate the main app service
+  - cops_service:
+      state: "{{cops_mysql_vars.activated | ternary('started', 'stopped')}}"
+      enabled: "{{cops_mysql_vars.activated | ternary(True, False)}}"
+      daemon_reload: yes
+      name: "{{item}}"
+    with_items: "{{cops_mysql_vars.services}}"
+  # this will fail on non systemd hosts on purpose !
+  # if we have activated the reconfigure units (docker mode essentially)
+  - cops_service:
+      enabled: "{{cops_mysql_vars.activated | ternary(True, False)}}"
+      daemon_reload: yes
+      name: "{{item}}"
+    with_items: "{{cops_mysql_vars.reconfigure_services}}"
+    when: corpusops_vars.has_services_manager
+  # force a reload/restart here
+  - shell: echo "force service reload/restart"
+    notify: "{{cops_mysql_vars.rhandlers}}"
+  - meta: flush_handlers

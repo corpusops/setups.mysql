@@ -1,0 +1,75 @@
+---
+- set_fact:
+    cacheable: false
+    only_steps: "{{only_steps|default(False)}}"
+- set_fact:
+    cacheable: false
+    cops_mysql_lifecycle_app_push_code: "{{cops_mysql_lifecycle_app_push_code|default(cops_mysql_lifecycle_app|default(not only_steps))}}"
+- set_fact:
+    cacheable: false
+    cops_mysql_s_prerequisites_pkgs: "{{cops_mysql_s_prerequisites_pkgs            |default(cops_mysql_s_prerequisites|default(cops_mysql_lifecycle_app_prerequisites|default(cops_mysql_lifecycle_app_setup|default(not only_steps))))}}"
+    cops_mysql_s_prerequisites_build_pkgs: "{{cops_mysql_s_prerequisites_build_pkgs|default(cops_mysql_s_prerequisites|default(cops_mysql_lifecycle_app_prerequisites|default(cops_mysql_lifecycle_app_setup|default(not only_steps))))}}"
+    cops_mysql_s_setup_configs:    "{{cops_mysql_s_setup_configs                                                                           |default(cops_mysql_s_setup|default(cops_mysql_lifecycle_app_setup|default(not only_steps)))}}"
+    cops_mysql_s_setup_server:    "{{cops_mysql_s_setup_server                                                                           |default(cops_mysql_s_setup|default(cops_mysql_lifecycle_app_setup|default(not only_steps)))}}"
+    cops_mysql_s_setup_sysctls:    "{{cops_mysql_s_setup_sysctls                                                                           |default(cops_mysql_s_setup|default(cops_mysql_lifecycle_app_setup|default(not only_steps)))}}"
+    cops_mysql_s_layout_layout:  "{{cops_mysql_s_layout_layout|default(cops_mysql_s_layout       |default(cops_mysql_lifecycle_app_layout|default(cops_mysql_s_setup|default(cops_mysql_lifecycle_app_setup|default(not only_steps)))))}}"
+    cops_mysql_s_manage_content_roles:      "{{cops_mysql_s_manage_content_roles    |default(cops_mysql_s_manage_content|default(not only_steps))}}"
+    cops_mysql_s_manage_content_databases:  "{{cops_mysql_s_manage_content_databases|default(cops_mysql_s_manage_content|default(not only_steps))}}"
+    cops_mysql_s_manage_content_checkroot:  "{{cops_mysql_s_manage_content_checkroot|default(cops_mysql_s_manage_content|default(not only_steps))}}"
+    cops_mysql_s_users_user:     "{{(cops_mysql_s_users_user   |default(cops_mysql_s_users|default(cops_mysql_lifecycle_app_setup|default(not only_steps))) or cops_mysql_lifecycle_app_push_code)}}"
+    cops_mysql_s_users_group:    "{{(cops_mysql_s_users_group  |default(cops_mysql_s_users|default(cops_mysql_lifecycle_app_setup|default(not only_steps))) or cops_mysql_lifecycle_app_push_code)}}"
+    cops_mysql_s_workers_service: "{{cops_mysql_s_workers_service |default(cops_mysql_s_workers|default(cops_mysql_lifecycle_app_setup|default(not only_steps)))}}"
+    cops_mysql_s_healthchecks:  "{{cops_mysql_s_healthchecks  |default(cops_mysql_lifecycle_app_setup|default(not only_steps))}}"
+- set_fact:
+    cacheable: false
+    cops_mysql_s_manage_content:       "{{(
+      cops_mysql_s_manage_content_checkroot or
+      cops_mysql_s_manage_content_databases or
+      cops_mysql_s_manage_content_roles)}}"
+    cops_mysql_s_users:          "{{cops_mysql_lifecycle_app_push_code or cops_mysql_s_users_user or cops_mysql_s_users_group}}"
+    cops_mysql_s_layout:         "{{cops_mysql_s_layout_layout}}"
+    cops_mysql_s_first_fixperms: "{{cops_mysql_s_first_fixperms|default(cops_mysql_lifecycle_app_setup|default(not only_steps))}}"
+    cops_mysql_s_prerequisites:  "{{(
+      cops_mysql_s_prerequisites_build_pkgs or
+      cops_mysql_s_prerequisites_pkgs)}}"
+    cops_mysql_s_workers:        "{{cops_mysql_s_workers       |default(cops_mysql_lifecycle_app_setup|default(not only_steps))}}"
+    cops_mysql_s_entry_point:    "{{cops_mysql_s_entry_point   |default(ansible_virtualization_type in ['docker'] and not only_steps)}}"
+    cops_mysql_s_fixperms_configs: "{{cops_mysql_s_fixperms_configs  |default(cops_mysql_lifecycle_app_setup|default(not only_steps))}}"
+    cops_mysql_s_fixperms_run:     "{{cops_mysql_s_fixperms_run  |default(cops_mysql_lifecycle_app_setup|default(not only_steps))}}"
+    cops_mysql_s_end_fixperms:     "{{cops_mysql_s_end_fixperms  |default(cops_mysql_lifecycle_app_setup|default(not only_steps))}}"
+- set_fact:
+    cacheable: false
+    cops_mysql_s_setup: "{{(
+        cops_mysql_s_setup_server or
+        cops_mysql_s_setup_sysctls or
+        cops_mysql_s_setup_configs)}}"
+- set_fact:
+    cacheable: false
+    cops_mysql_lifecycle_app_level_1_steps: "{{(
+        cops_mysql_s_users or
+        cops_mysql_s_layout or
+        cops_mysql_s_first_fixperms or
+        cops_mysql_s_prerequisites or
+        cops_mysql_s_setup or
+        cops_mysql_s_workers or
+        cops_mysql_s_healthchecks or
+        cops_mysql_s_entry_point or
+        cops_mysql_s_manage_content or
+        cops_mysql_s_end_fixperms)}}"
+- set_fact:
+    cacheable: false
+    cops_mysql_lifecycle_app_setup: "{{cops_mysql_lifecycle_app_setup|default(
+                                          (cops_mysql_lifecycle_app|default(False)) or (
+                                            cops_mysql_lifecycle_app_level_1_steps))}}"
+- set_fact:
+    cacheable: false
+    cops_mysql_lifecycle_app: "{{cops_mysql_lifecycle_app|default(
+        cops_mysql_lifecycle_app_push_code or
+        cops_mysql_lifecycle_app_setup)}}"
+- set_fact:
+    cacheable: false
+    cops_mysql_lifecycle_lc_1_steps: "{{(
+      cops_mysql_lifecycle_app)}}"
+- set_fact:
+    cacheable: false
+    cops_mysql_s_vars: "{{cops_mysql_s_vars|default(cops_mysql_lifecycle_lc_1_steps)}}"
