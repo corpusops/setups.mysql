@@ -1,6 +1,6 @@
 ---
 mysql_servers: all
-cops_mysql_domain: "{{cops_app_name}}.vbox.local"
+cops_mysql_domain: "{{cops_mysql_name}}.vbox.local"
 cops_installer_mode: vagrant
 # let outside VM user edit inside VM files
 cops_supereditors: ["{{ansible_user_id}}",
