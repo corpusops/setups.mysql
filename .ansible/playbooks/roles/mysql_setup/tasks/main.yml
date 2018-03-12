@@ -1,10 +1,10 @@
 ---
-- include_role: {name: mysql_sysctls}
+- include_role: {name: mysql_setup_sysctls}
   tags: [cops_mysql_s_setup_sysctls]
   when: [cops_mysql_s_setup_sysctls]
-- include_role: {name: mysql_server}
+- include_role: {name: mysql_setup_server}
   tags: [cops_mysql_s_setup_server]
   when: [cops_mysql_s_setup_server]
-- include_role: {name: mysql_configs}
+- include_role: {name: mysql_setup_configs}
   tags: [cops_mysql_s_setup_configs]
   when: [cops_mysql_s_setup_configs]
