@@ -5,7 +5,7 @@ cops_db_password: secret
 cops_mysql__roles:
 - name: "{{cops_db_user}}"
   password: "{{cops_db_password}}"
-  privs: "{{cops_db_name}}.*"
+  privs: "{{cops_db_name}}.*:ALL"
 cops_mysql__databases:
 - db: "{{cops_db_name}}"
 cops_mysql_name: mysql
