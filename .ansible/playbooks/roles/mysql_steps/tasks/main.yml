@@ -24,8 +24,8 @@
     cops_mysql_s_fixperms_run:       "{{cops_mysql_s_fixperms_run    |default((cops_mysql_s_first_fixperms|default(not only_steps)) or (cops_mysql_s_end_fixperms|default(not only_steps)))}}"
 - set_fact:
     cacheable: false
-    cops_mysql_s_first_fixperms: "{{cops_mysql_s_first_fixperms        |default(cops_mysql_s_fixperms_configs or cops_mysql_s_fixperms_run)}}"
-    cops_mysql_s_end_fixperms:   "{{cops_mysql_s_end_fixperms          |default(cops_mysql_s_fixperms_configs or cops_mysql_s_fixperms_run)}}"
+    cops_mysql_s_first_fixperms: "{{cops_mysql_s_first_fixperms        |default(not only_steps)}}"
+    cops_mysql_s_end_fixperms:   "{{cops_mysql_s_end_fixperms          |default(not only_steps)}}"
     cops_mysql_s_manage_content:       "{{(
       cops_mysql_s_manage_content_checkroot or
       cops_mysql_s_manage_content_databases or
