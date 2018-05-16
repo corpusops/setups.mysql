@@ -4,3 +4,10 @@
     cops_configs_templates: "{{cops_mysql_vars.ep_configs}}"
   tags: [cops_mysql_s_entry_point]
   when: [cops_mysql_s_entry_point]
+# this will fail on non systemd hosts on purpose !
+# if we have activated the reconfigure units (docker mode essentially)
+- cops_service:
+    enabled: "{{cops_mysql_vars.activated | ternary(True, False)}}"
+    daemon_reload: yes
+    name: "{{item}}"
+  with_items: "{{cops_mysql_vars.reconfigure_services}}"

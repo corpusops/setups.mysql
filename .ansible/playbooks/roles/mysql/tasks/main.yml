@@ -3,6 +3,9 @@
   when: [cops_mysql_lifecycle_app_setup]
   become: "{{cops_mysql_vars.become}}"
   block:
+  - include_role: {name: mysql_docker_reconfigure, allow_duplicates: false}
+    tags: [cops_mysql_s_docker_reconfigure]
+    when: [cops_mysql_s_docker_reconfigure]
   - include_role: {name: mysql_users, allow_duplicates: false}
     tags: [cops_mysql_s_users]
     when: [cops_mysql_s_users]

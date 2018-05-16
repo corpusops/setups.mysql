@@ -1,0 +1,27 @@
+---
+# Configure things before systemd launches
+- name: maybe enable some services
+  changed_when: false
+  cops_service:
+    enabled: true
+    name: mysql
+- when: "cops_mysql_do_reconfigure_db|default(true)"
+  changed_when: false
+  name: "reconfigure DB"
+  shell: |-
+    set -ex
+    cd "{{cops_mysql_vars.provision_dir}}"
+    export NONINTERACTIVE=1
+    export PATH=/usr/lib/mysql/$v/bin:$PATH
+    c="/var/lib/mysql"
+    d="/usr/share/mysql"
+    if [ ! "$(ls -A $c)" ];then
+      mkdir -p "$c"
+      chown mysql:mysql "$c"
+      #mysql_install_db --user=mysql --basedir=$d --datadir=$c --insecure
+      mysqld --initialize-insecure --user={{corpusops_services_db_mysql_user}} \
+        --basedir=$d --datadir=$c \
+        --character-set-server='{{corpusops_services_db_mysql_character_set}}' \
+        --collation-server='{{corpusops_services_db_mysql_collate}}'
+    fi
+    chown -Rf mysql:mysql "$c" /var/log/mysql

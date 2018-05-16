@@ -1,76 +1,34 @@
 #!/usr/bin/env bash
-set -e
 log() { echo "$@" >&2; }
 vv() { log "($COPS_CWD) $@";"$@"; }
 debug() { if [[ -n "${ADEBUG-}" ]];then log "$@";fi }
-die_() {
-    rc=${1:-1}
-    shift
-    if [[ -n $@ ]];then
-        log $@
-    fi
-    exit $rc
-}
-die() { die_ 256 $@; }
-export COPS_CWD="${COPS_CWD:-$(pwd)}"
-export LOCAL_COPS_ROOT="${LOCAL_COPS_ROOT:-$COPS_CWD/local/corpusops.bootstrap}"
-export LOCAL_DCOPS_ROOT="$(dirname  $LOCAL_COPS_ROOT)"
-export SYS_COPS_ROOT=${SYS_COPS_ROOT:-/srv/corpusops/corpusops.bootstrap}
-export USER_COPS_ROOT="${USER_COPS_ROOT:-$HOME/corpusops/corpusops.bootstrap}"
-if [ "x$(whoami)" = "xroot" ];then
-    export DEFAULT_COPS_ROOT=$SYS_COPS_ROOT
-else
-    export DEFAULT_COPS_ROOT=$USER_COPS_ROOT
+vvdebug() { if [[ -n "${ADEBUG-}" ]];then log "$@";fi;"${@}"; }
+export COPS_CWD=${COPS_CWD:-$(pwd)}
+export COPS_SCRIPTS_DIR="$(cd "$(dirname "$0")" && pwd)"
+export COPS_LOCAL_FOLDER="${COPS_LOCAL_FOLDER:-$COPS_CWD/local}"
+export LOCAL_COPS_ROOT="$COPS_LOCAL_FOLDER/corpusops.bootstrap"
+script="$(basename $0)"
+real_script="$LOCAL_COPS_ROOT/hacking/deploy/$script"
+real_env="$LOCAL_COPS_ROOT/hacking/deploy/ansible_deploy_env"
+debug "local folder: $COPS_LOCAL_FOLDER"
+if [ ! -e "$COPS_LOCAL_FOLDER" ];then
+    log "local folder not found ($COPS_LOCAL_FOLDER)"
+    log "Maybe time to mkdir $COPS_LOCAL_FOLDER or to cd into $COPS_CWD before launching commands"
+    exit 1
 fi
-export COPS_ROOT="${COPS_ROOT:-$DEFAULT_COPS_ROOT}"
-export COPS_URL="${COPS_URL:-https://github.com/corpusops/corpusops.bootstrap.git}"
-export NO_SHARED_COPS="${NO_SHARED_COPS-${SKIP_COPS_FROM_SYSTEM-}}"
-if [[ -n ${SKIP_COPS_SETUP-} ]];then
-    die_ 0 "-> Skip corpusops setup"
+debug "LOCAL_COPS_ROOT folder: $LOCAL_COPS_ROOT"
+if [ ! -e "$LOCAL_COPS_ROOT" ];then
+    log "corpusops not found in $LOCAL_COPS_ROOT"
+    log "Maybe time to $COPS_SCRIPTS_DIR/download_corpusops.sh"
+    exit 1
 fi
-test_corpusops_present() {
-    # in docker images, corpusops has been stripped from some folders
-    # testing git isnt enougth
-    if [ -e "$LOCAL_COPS_ROOT" ] && \
-        [ -e "$LOCAL_COPS_ROOT/roles" ] && \
-        [ -e "$LOCAL_COPS_ROOT/bin" ] && \
-        [ -e "$LOCAL_COPS_ROOT/hacking" ];then
-        return 0
-    else
-        return 1
-    fi
-}
-# Maintain corpusops fresh and operational
-# Using system one
-if [[ -z $NO_SHARED_COPS ]] && ! ( test_corpusops_present );then
-    if [ ! -e local/corpusops.bootstrap ];then
-        log "Reuse corpusops from: $COPS_ROOT"
-        if [ ! -e "$LOCAL_DCOPS_ROOT" ];then
-            mkdir -pv "$LOCAL_DCOPS_ROOT"
-        fi
-        ln -sf "$COPS_ROOT" "$LOCAL_COPS_ROOT"
-    elif [ -h local/corpusops.bootstrap ];then
-        log "Reuse corpusops from: $(readlink -f "$LOCAL_COPS_ROOT")"
-    elif [ -d local/corpusops.bootstrap ];then
-        log "Local corpusops copy in: local/corpusops.bootstrap"
-    fi
+if [ ! -e "$real_script" ];then
+    log "Corpusops script: $script not found (LOCAL_COPS_ROOT: $LOCAL_COPS_ROOT)"
+    log "Maybe time to $LOCAL_COPS_ROOT/bin/install.sh -C -s"
+    exit 1
 fi
-# Using local copy in fallback
-if [[ -n ${SKIP_COPS_CHECKOUT-} ]];then
-        log "Skip corpusops.bootstrap checkout"
-else
-    if ! ( test_corpusops_present; );then
-        if [ ! -e "$COPS_ROOT" ];then
-            mkdir -p "$COPS_ROOT" || die "$COPS_ROOT can't be created"
-        fi
-        if ! git clone "$COPS_URL" "$LOCAL_COPS_ROOT";then
-            die_ 21 "Error while cloning $COPS_URL -> $LOCAL_COPS_ROOT"
-        fi
-    else
-        addmsg=
-        if [ -h $LOCAL_COPS_ROOT ];then
-            addmsg="${add} -> $(readlink -f $LOCAL_COPS_ROOT)"
-        fi
-        log "corpusops.bootstrap already there in $LOCAL_COPS_ROOT${addmsg}"
-    fi
+if ! vvdebug ln -sf "$real_env" "$COPS_SCRIPTS_DIR/ansible_deploy_env";then
+    log "Symlinking env failed: $COPS_SCRIPTS_DIR/ansible_deploy_env"
+    exit 1
 fi
+vvdebug "$real_script" "$@"

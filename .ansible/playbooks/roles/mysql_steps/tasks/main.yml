@@ -47,6 +47,9 @@
       {% set _ = r.update({'cops_mysql_s_healthchecks':  cops_mysql_s_healthchecks  |default(cops_mysql_lifecycle_app_setup|default(not only_steps))}) %}
       {% set cops_mysql_s_healthchecks = r['cops_mysql_s_healthchecks'] %}
       #
+      {% set _ = r.update({'cops_mysql_s_docker_reconfigure': cops_mysql_s_docker_reconfigure|default(False)}) %}
+      {% set cops_mysql_s_docker_reconfigure = r['cops_mysql_s_docker_reconfigure'] %}
+      #
       {% set _ = r.update({'cops_mysql_s_fixperms_configs':   cops_mysql_s_fixperms_configs|default((cops_mysql_s_first_fixperms|default(not only_steps)) or (cops_mysql_s_end_fixperms|default(not only_steps)))}) %}
       {% set cops_mysql_s_fixperms_configs = r['cops_mysql_s_fixperms_configs'] %}
       #
@@ -74,7 +77,7 @@
       {% set _ = r.update({'cops_mysql_s_workers':        cops_mysql_s_workers       |default(cops_mysql_lifecycle_app_setup|default(not only_steps))}) %}
       {% set cops_mysql_s_workers = r['cops_mysql_s_workers'] %}
       #
-      {% set _ = r.update({'cops_mysql_s_entry_point':    cops_mysql_s_entry_point   |default(ansible_virtualization_type in ['docker'] and not only_steps)}) %}
+      {% set _ = r.update({'cops_mysql_s_entry_point':   (cops_mysql_s_entry_point   |default(cops_mysql_lifecycle_app_setup|default(cops_mysql_lifecycle_app|default(not only_steps))) and ansible_virtualization_type in ['docker'])}) %}
       {% set cops_mysql_s_entry_point = r['cops_mysql_s_entry_point'] %}
       #
       {% set _ = r.update({'cops_mysql_s_setup': ( cops_mysql_s_setup_server or cops_mysql_s_setup_sysctls or cops_mysql_s_setup_configs)}) %}

@@ -1,9 +1,10 @@
 {
-  "images": [
-    {
-      "builder_type": "packer",
-      "version": "5.7",
-      "name": "mysql"
-    }
-  ]
+    "images": [
+        {
+            "tag": "corpusops/mysql:5.7",
+            "builder_type": "docker",
+            "dockerfile": "Dockerfile",
+            "extra_args": "--build-arg COPS_IMG={tag}"
+        }
+    ]
 }

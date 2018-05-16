@@ -1,0 +1,65 @@
+---
+version: '3.5'
+# Start with:
+#  SUPEREDITORS=$(id -u) docker-compose -f d*-compose-dev.yml  up -t 0 -d --force-recreate mysql
+#
+x-image: &image_template
+  image: "corpusops/mysql:5.7"
+  environment:
+  - SUPEREDITORS=$SUPEREDITORS
+  - DEBUG=1
+  - "DOCKER_SKIP_START=${DOCKER_SKIP_START-}"
+  - |
+    A_RECONFIGURE=---
+    only_steps: true
+    cops_mysql_lifecycle_app_push_code: false
+    cops_mysql_s_docker_reconfigure: true
+    cops_mysql_s_first_fixperms: true
+    cops_mysql_s_setup: true
+  - |
+    A_POSTCONFIGURE=---
+    only_steps: true
+    cops_mysql_lifecycle_app_push_code: false
+    cops_mysql_s_manage_content: true
+    corpusops_services_db_mysql_root_password: secret47EE9Ebkn2qQf9M__CHANGEME
+    cops_mysql__roles:
+    - name: foo
+      password: secret47EE9Ebkn2qQf9N__CHANGEME
+    cops_mysql__databases:
+    - db: "foo"
+      owner: "foo"
+  command: >
+    sh -c 'if [ "x$DOCKER_SKIP_START" != x ];
+    then while true;do echo sleeping;sleep 65535;done
+    else exec /app_entry_point;
+    fi'
+  # for now this is a bloat image-as-a-vm to make a dev env ligther than a vagrant VM
+  tmpfs: [/run, /run/lock]
+  volumes: &image_volumes
+  # systemd
+  - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
+  # data
+  - "./local/setup:/setup"
+  - "./local/data/mysql:/var/lib/mysql"
+  - "./local/data/logs/mysql:/var/log/mysql"
+  # sources
+  - "./.git:/srv/projects/mysqlproject/project/.git"
+  - "./.gitignore:/srv/projects/mysqlproject/project/.gitignore"
+  - "./.gitmodules:/srv/projects/mysqlproject/project/.gitmodules"
+  # provision
+  - "./.ansible/vaults:/provision_dir/.ansible/vaults"
+  - "./.ansible/scripts:/provision_dir/.ansible/scripts"
+  - "./.ansible/playbooks:/provision_dir/.ansible/playbooks"
+  # Need a bind mount in local/corpusops.bootstrap instead of the symlink
+  #- "./local/corpusops.bootstrap/bin:/srv/corpusops/corpusops.bootstrap/bin"
+  #- "./local/corpusops.bootstrap/hacking:/srv/corpusops/corpusops.bootstrap/hacking"
+  #- "./local/corpusops.bootstrap/roles:/srv/corpusops/corpusops.bootstrap/roles"
+  #- "./local/corpusops.bootstrap/requirements:/srv/corpusops/corpusops.bootstrap/requirements"
+  #- "./local/corpusops.bootstrap/docs:/srv/corpusops/corpusops.bootstrap/docs"
+  # Remember: /setup/rootfs/ is synced inside the container /
+  #- "./local/app_entry_point:/app_entry_point"
+  #- "./local/entry_point:/entry_point"
+  #- "./local/reconfigure.sh:/provision_dir/reconfigure.sh"
+services:
+  mysql:
+    <<:  [ *image_template ]

@@ -15,9 +15,7 @@ env:
       silent_rm="$silent rm -rf"
   matrix:
     - |
-      __VERSION__="5.7" \
-      IMAGE="packer__${__VERSION__}.json"  \
-      DOCKER_IMAGE="corpusops/${__NAME__}:${__VERSION__}"
+      IMAGES="corpusops/mysql:5.7"
 language: python
 python: "2.7"
 before_install:
@@ -29,15 +27,18 @@ install:
   - sh -c "$apply_role $COPS_ROOT/roles/corpusops.roles/localsettings_packer/role.yml"
   - sh -c "$apply_role $COPS_ROOT/roles/corpusops.roles/services_virt_docker/role.yml"
 script:
-  - $silent .ansible/scripts/build_docker_images.sh --images $IMAGE
+  - set -e;for i in $IMAGES;do $silent .ansible/scripts/build_docker_images.sh --images $i;done
 after_success:
   - docker images
   - |
-    if [ "x$RELEASE_DEBUG" = "x" ];then
-      DEBUG=1 $funcs vv $release $DOCKER_IMAGE
-    else
-      $silent $release $DOCKER_IMAGE
-    fi
+    set -e;
+    for i in $IMAGES;do
+     if [ "x$RELEASE_DEBUG" = "x" ];then
+       DEBUG=1 $funcs vv $release $i
+     else
+       $silent $release $i
+     fi
+    done
 cache:
   directories:
     - $HOME/.cache/pip

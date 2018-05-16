@@ -1,7 +1,8 @@
 ---
 # APP
 - hosts: "{{mysql_servers|default('all')}}"
-  roles: [corpusops.roles/ansible_plugins]
+  roles:
+    - role: corpusops.roles/ansible_plugins
   tasks:
   - when: ["cops_mysql_lifecycle_app|default(true)"]
     tags: ["cops_mysql_lifecycle_app"]

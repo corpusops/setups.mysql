@@ -3,5 +3,5 @@
 cops_db_name: db
 cops_db_user: user
 cops_db_password: secret
-#corpusops_services_db_mysql_root_password: supersecret
+corpusops_services_db_mysql_root_password: supersecretcX2kIV5923X23mP_TOBECHANGED
 # corpusops_services_db_mysql_foobar: x
