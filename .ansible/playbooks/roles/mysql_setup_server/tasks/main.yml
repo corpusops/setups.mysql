@@ -2,7 +2,7 @@
 # Setup/Install mysql
 - include_role: {name: corpusops.roles/services_db_mysql}
   vars:
-    mysql_prerequisites: true
-    mysql_configuration: false
+    mysql_prerequisites: false
+    mysql_configuration: true
     mysql_services: false
     mysql_checkroot: false

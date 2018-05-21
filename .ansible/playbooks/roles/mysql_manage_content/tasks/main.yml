@@ -1,4 +1,10 @@
 ---
+- include_role: {name: corpusops.roles/services_db_mysql}
+  vars:
+    mysql_prerequisites: false
+    mysql_configuration: false
+    mysql_services: false
+    mysql_checkroot: true
 - include_role: {name: mysql_checkroot}
   when: [cops_mysql_s_manage_content_checkroot]
   tags: [cops_mysql_s_manage_content_checkroot]
