@@ -1,7 +1,7 @@
 ---
 version: '3.5'
 # Start with:
-#  SUPEREDITORS=$(id -u) docker-compose -f d*-compose-dev.yml  up -t 0 -d --force-recreate mysql
+#  SUPEREDITORS=$(id -u) docker-compose -f d*-compose.yml -f d*-compose-dev.yml  up -t 0 -d --force-recreate mysql
 #
 x-image: &image_template
   image: "corpusops/mysql:5.7"

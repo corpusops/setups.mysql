@@ -41,6 +41,7 @@ x-image: &image_template
   # systemd
   - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
   # data
+  - "./local/setup:/setup"
   - "./local/data/mysql:/var/lib/mysql"
   - "./local/data/logs/mysql:/var/log/mysql"
   # Remember: /setup/rootfs/ is synced inside the container /
