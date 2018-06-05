@@ -12,7 +12,6 @@
     set -ex
     cd "{{cops_mysql_vars.provision_dir}}"
     export NONINTERACTIVE=1
-    export PATH=/usr/lib/mysql/$v/bin:$PATH
     c="/var/lib/mysql"
     d="/usr/share/mysql"
     if [ ! "$(ls -A $c)" ];then
