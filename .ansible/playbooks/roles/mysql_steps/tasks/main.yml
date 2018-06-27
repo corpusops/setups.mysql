@@ -95,7 +95,7 @@
       {% set _ = r.update({'cops_mysql_lifecycle_lc_1_steps': ( cops_mysql_lifecycle_app)}) %}
       {% set cops_mysql_lifecycle_lc_1_steps = r['cops_mysql_lifecycle_lc_1_steps'] %}
       #
-      {% set _ = r.update({'cops_mysql_s_vars': cops_mysql_s_vars|default(cops_mysql_lifecycle_lc_1_steps)}) %}
+      {% set _ = r.update({'cops_mysql_s_vars': cops_mysql_s_vars|default(cops_mysql_lifecycle_lc_1_steps) or only_steps}) %}
       {% set cops_mysql_s_vars = r['cops_mysql_s_vars'] %}
       #
       {{ r | to_json }}
