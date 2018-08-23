@@ -25,6 +25,17 @@
     content: |
       ---
       {% set p = 'cops_mysql_vars' %}
+      {% set roles = [] %}
+      {% for role in vars[p]._roles %}
+      {%  if 'host' not in role %}
+      {%   set nrole = role|copsf_deepcopy %}
+      {%   set _ = nrole.update({'host': 'localhost'}) %}
+      {%   set _ = role.update({'host': '%'}) %}
+      {%   set _ = roles.append(nrole) %}
+      {%  endif %}
+      {%  set _ = roles.append(role) %}
+      {% endfor %}
+      {% set _ = vars[p].update({'_roles': roles}) %}
       {% set _vars = {p: vars[p]} %}
       {% set env = _vars[p].env %}
       {% set _ = env.update(_vars[p].env_overrides) %}
