@@ -38,7 +38,7 @@ RUN bash -c '\
   rm -rf local/corpusops.bootstrap \
   && ln -sf $COPS_ROOT local/corpusops.bootstrap \
   && .ansible/scripts/download_corpusops.sh \
-  && .ansible/scripts/setup_ansible.sh'
+  && .ansible/scripts/setup_ansible.sh && cd $COPS_ROOT/roles/corpusops.roles && git log -n 1 && cd -'
 
 # Install mysql app
 RUN bash -c '\
