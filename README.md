@@ -1,8 +1,6 @@
 # Docker based image for mysql
 
 
-## Support development
-- [paypal](https://paypal.me/kiorky)
 
 ## corpusops/mysql (CURRENT)
 ### Description
