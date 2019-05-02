@@ -1,4 +1,4 @@
 ---
 # Set any sysctl
 - include_tasks: _sysctl.yml
-  with_items: "{{cops_mysql_vars.sysctls}}"
+  loop: "{{cops_mysql_vars.sysctls}}"

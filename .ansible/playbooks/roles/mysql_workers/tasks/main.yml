@@ -14,7 +14,7 @@
       enabled: "{{cops_mysql_vars.activated | ternary(True, False)}}"
       daemon_reload: yes
       name: "{{item}}"
-    with_items: "{{cops_mysql_vars.services}}"
+    loop: "{{cops_mysql_vars.services}}"
   # force a reload/restart here
   - shell: echo "force service reload/restart"
     notify: "{{cops_mysql_vars.rhandlers}}"

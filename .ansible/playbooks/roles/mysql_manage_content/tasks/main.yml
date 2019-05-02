@@ -3,12 +3,12 @@
   when: [cops_mysql_s_manage_content_checkroot]
   tags: [cops_mysql_s_manage_content_checkroot]
 - include_role: {name: mysql_role}
-  with_items: "{{cops_mysql_vars._roles}}"
+  loop: "{{cops_mysql_vars._roles}}"
   loop_control: {loop_var: role_item}
   when: [cops_mysql_s_manage_content_roles]
   tags: [cops_mysql_s_manage_content_roles]
 - include_role: {name: mysql_database}
-  with_items: "{{cops_mysql_vars._databases}}"
+  loop: "{{cops_mysql_vars._databases}}"
   loop_control: {loop_var: db_item}
   tags: [cops_mysql_s_manage_content_databases]
   when: [cops_mysql_s_manage_content_databases]

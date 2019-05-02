@@ -13,7 +13,7 @@
     when: "(ansible_os_family.lower() in ['debian'] and
             cops_mysql_vars.deb_packages is not none and
             cops_mysql_vars.deb_packages|length > 0)"
-    with_items: "{{cops_mysql_vars.deb_packages}}"
+    loop: "{{cops_mysql_vars.deb_packages}}"
   - name: update & install prerequisites
     package:
       update_cache: yes
@@ -23,7 +23,7 @@
     when: "(ansible_os_family.lower() in ['redhat'] and
             cops_mysql_vars.rh_packages is not none and
             cops_mysql_vars.rh_packages|length > 0)"
-    with_items: "{{cops_mysql_vars.rh_packages}}"
+    loop: "{{cops_mysql_vars.rh_packages}}"
 - when: [cops_mysql_s_prerequisites_build_pkgs]
   tags: [cops_mysql_s_prerequisites_build_pkgs]
   block:
@@ -36,7 +36,7 @@
     when: "(ansible_os_family.lower() in ['debian'] and
             cops_mysql_vars.deb_build_packages is not none and
             cops_mysql_vars.deb_build_packages|length > 0)"
-    with_items: "{{cops_mysql_vars.deb_build_packages}}"
+    loop: "{{cops_mysql_vars.deb_build_packages}}"
   - name: update & install build prerequisites
     package:
       update_cache: yes
@@ -46,7 +46,7 @@
     when: "(ansible_os_family.lower() in ['redhat'] and
             cops_mysql_vars.rh_build_packages is not none and
             cops_mysql_vars.rh_build_packages|length > 0)"
-    with_items: "{{cops_mysql_vars.rh_build_packages}}"
+    loop: "{{cops_mysql_vars.rh_build_packages}}"
 - include_role: {name: corpusops.roles/services_db_mysql}
   vars:
     mysql_prerequisites: true
